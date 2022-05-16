@@ -2,6 +2,7 @@
 let videogrid=document.getElementById('video-grid');
 const myvideo=document.createElement('video')
 myvideo.muted=true;
+const share=document.getElementById('share');
 
 var socket = io('/');
 
@@ -17,6 +18,7 @@ var username=prompt("Enter your username")
 let peers=[];
 
 let myvideostream;
+let currentpeer;
 
 navigator.mediaDevices.getUserMedia({
     video:true,
@@ -30,6 +32,7 @@ navigator.mediaDevices.getUserMedia({
         const video=document.createElement('video');
         call.on('stream',uservideostream=>{
             addvideostream(video,uservideostream)
+            currentpeer=call.peerConnection;
         })
     })
 
@@ -57,6 +60,7 @@ peer.on('open',id=>{
         const video=document.createElement('video');
         call.on('stream',uservideostream=>{
             addvideostream(video,uservideostream)
+            currentpeer=call.peerConnection;
         })
 
         call.on('close',()=>{
@@ -117,6 +121,27 @@ function stopandplay(){
        
     }
 }
+share.addEventListener('click',(e)=>{
+    navigator.mediaDevices.getDisplayMedia({
+        video:{
+            cursor:"always"
+        },
+        audio:{
+            echoCancellation:true,
+            noiseSuppression:true
+        }
+    }).then((stream=>{
+        let videotrack=stream.getVideoTracks()[0];
+        let sender=currentpeer.getSenders().find(function(s){
+            return s.track.kind==videotrack.kind
+        })
+        sender.replaceTrack(videotrack)
+       
+    })).catch(err=>{
+        console.log(err)
+    })
+})
+
 function setunmute(){
 let mainbutton=document.querySelector('.mute');
 let html=`<span><i class="unmute fas fa-microphone-slash"></i></span>

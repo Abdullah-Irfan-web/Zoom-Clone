@@ -74,9 +74,13 @@ video{
 .meeting p{
     font-size: 18px;
 color: rgb(165, 0, 0);
+
 }
 .meeting{
     margin-right: 10px;
+    height:30px;
+    width:150px;
+    margin-top: 6px;
 }
 .main-buttons span i{
     font-size: 18px;
